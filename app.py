@@ -91,6 +91,9 @@ def crime_map():
 @app.route("/network")
 def network():
     return render_template("network.html")
+@app.route("/risk")
+def risk():
+    return render_template("risk.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

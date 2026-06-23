@@ -65,6 +65,23 @@ def generate_crime_map():
     </div>
     """
     m.get_root().html.add_child(folium.Element(legend_html))
+    # Add navbar
+    navbar_html = """
+    <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#161b22;
+                padding:15px 30px;display:flex;align-items:center;gap:15px;
+                border-bottom:2px solid #f85149;">
+        <h1 style="font-size:20px;color:#f85149;margin:0;">🚔 KSP Crime Analytics</h1>
+        <span style="color:#8b949e;font-size:13px;">Karnataka State Police — SCRB Intelligence Dashboard</span>
+        <div style="margin-left:auto;display:flex;gap:15px;">
+            <a href="/" style="color:#8b949e;text-decoration:none;">📊 Dashboard</a>
+            <a href="/map" style="color:#f85149;text-decoration:none;">🗺️ Crime Map</a>
+            <a href="/network" style="color:#8b949e;text-decoration:none;">🕸️ Network</a>
+            <a href="/risk" style="color:#8b949e;text-decoration:none;">🤖 AI Risk</a>
+        </div>
+    </div>
+    <div style="height:60px;"></div>
+    """
+    m.get_root().html.add_child(folium.Element(navbar_html))
 
     # Save map
     map_path = os.path.join(os.path.dirname(__file__), 

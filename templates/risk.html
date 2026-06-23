@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Risk Scoring</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0d1117; color: white; }
+        .navbar {
+            background: #161b22;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #f85149;
+        }
+        .navbar h1 { font-size: 20px; color: #f85149; }
+        .nav-links { margin-left: auto; display: flex; gap: 15px; }
+        .nav-links a { color: #8b949e; text-decoration: none; }
+        .nav-links a:hover { color: #f85149; }
+        .content { padding: 30px; }
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #f85149;
+            border-left: 4px solid #f85149;
+            padding-left: 10px;
+        }
+        .chart-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .risk-table { width: 100%; border-collapse: collapse; }
+        .risk-table th {
+            background: #21262d;
+            padding: 12px 15px;
+            text-align: left;
+            color: #8b949e;
+            font-size: 13px;
+        }
+        .risk-table td { padding: 12px 15px; border-bottom: 1px solid #21262d; font-size: 14px; }
+        .risk-table tr:hover { background: #21262d; }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-critical { background: #3d1010; color: #ff4444; }
+        .badge-high     { background: #3d1f1f; color: #f85149; }
+        .badge-medium   { background: #3d2f10; color: #d29922; }
+        .badge-low      { background: #1f3d2d; color: #3fb950; }
+        .score-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #21262d;
+            margin-top: 4px;
+        }
+        .score-fill { height: 100%; border-radius: 4px; }
+        .ai-box {
+            background: #161b22;
+            border: 1px solid #f85149;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .ai-box h3 { color: #f85149; margin-bottom: 10px; font-size: 16px; }
+        .ai-box p { color: #8b949e; font-size: 14px; line-height: 1.7; }
+        .predict-btn {
+            background: #f85149;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        .predict-btn:hover { background: #da3633; }
+        select, input {
+            background: #21262d;
+            color: white;
+            border: 1px solid #30363d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 5px;
+        }
+        #prediction-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🚔 KSP Crime Analytics</h1>
+        <span>Karnataka State Police — SCRB Intelligence Dashboard</span>
+        <div class="nav-links">
+            <a href="/">📊 Dashboard</a>
+            <a href="/map">🗺️ Crime Map</a>
+            <a href="/network">🕸️ Network</a>
+            <a href="/risk" style="color:#f85149">🤖 AI Risk</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <p class="section-title">🤖 AI-Powered Risk Scoring & Predictions</p>
+
+        <!-- AI Predictor Tool -->
+        <div class="ai-box">
+            <h3>⚡ Real-Time Risk Predictor</h3>
+            <p>Select a district and time period to predict crime risk using AI pattern analysis.</p>
+            <br>
+            <select id="district-select">
+                <option>Bengaluru Urban</option>
+                <option>Mysuru</option>
+                <option>Tumkur</option>
+                <option>Belagavi</option>
+                <option>Mangaluru</option>
+                <option>Kalaburagi</option>
+                <option>Davanagere</option>
+                <option>Ballari</option>
+                <option>Vijayapura</option>
+                <option>Shivamogga</option>
+            </select>
+            <select id="time-select">
+                <option>Morning (6AM-12PM)</option>
+                <option>Afternoon (12PM-6PM)</option>
+                <option>Evening (6PM-10PM)</option>
+                <option>Night (10PM-6AM)</option>
+            </select>
+            <select id="crime-select">
+                <option>Theft</option>
+                <option>Assault</option>
+                <option>Fraud</option>
+                <option>Robbery</option>
+                <option>Cybercrime</option>
+            </select>
+            <br>
+            <button class="predict-btn" onclick="predictRisk()">🔍 Analyze Risk</button>
+            <div id="prediction-result"></div>
+        </div>
+
+        <!-- Risk Score Table -->
+        <div class="chart-card">
+            <p class="section-title">📊 District Risk Scores</p>
+            <table class="risk-table">
+                <thead>
+                    <tr>
+                        <th>District</th>
+                        <th>Risk Score</th>
+                        <th>Score Bar</th>
+                        <th>Risk Level</th>
+                        <th>Primary Crime</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bengaluru Urban</td>
+                        <td>94/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:94%;background:#ff4444"></div></div></td>
+                        <td><span class="badge badge-critical">CRITICAL</span></td>
+                        <td>Theft</td>
+                        <td>📈 Rising</td>
+                    </tr>
+                    <tr>
+                        <td>Mysuru</td>
+                        <td>72/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:72%;background:#f85149"></div></div></td>
+                        <td><span class="badge badge-high">HIGH</span></td>
+                        <td>Assault</td>
+                        <td>📈 Rising</td>
+                    </tr>
+                    <tr>
+                        <td>Belagavi</td>
+                        <td>68/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:68%;background:#f85149"></div></div></td>
+                        <td><span class="badge badge-high">HIGH</span></td>
+                        <td>Robbery</td>
+                        <td>➡️ Stable</td>
+                    </tr>
+                    <tr>
+                        <td>Tumkur</td>
+                        <td>52/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:52%;background:#d29922"></div></div></td>
+                        <td><span class="badge badge-medium">MEDIUM</span></td>
+                        <td>Theft</td>
+                        <td>➡️ Stable</td>
+                    </tr>
+                    <tr>
+                        <td>Mangaluru</td>
+                        <td>48/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:48%;background:#d29922"></div></div></td>
+                        <td><span class="badge badge-medium">MEDIUM</span></td>
+                        <td>Fraud</td>
+                        <td>📉 Falling</td>
+                    </tr>
+                    <tr>
+                        <td>Kalaburagi</td>
+                        <td>45/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:45%;background:#d29922"></div></div></td>
+                        <td><span class="badge badge-medium">MEDIUM</span></td>
+                        <td>Assault</td>
+                        <td>➡️ Stable</td>
+                    </tr>
+                    <tr>
+                        <td>Davanagere</td>
+                        <td>32/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:32%;background:#3fb950"></div></div></td>
+                        <td><span class="badge badge-low">LOW</span></td>
+                        <td>Theft</td>
+                        <td>📉 Falling</td>
+                    </tr>
+                    <tr>
+                        <td>Shivamogga</td>
+                        <td>28/100</td>
+                        <td><div class="score-bar"><div class="score-fill" style="width:28%;background:#3fb950"></div></div></td>
+                        <td><span class="badge badge-low">LOW</span></td>
+                        <td>Fraud</td>
+                        <td>📉 Falling</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid-2">
+            <div class="chart-card">
+                <div id="risk_chart" style="height:350px"></div>
+            </div>
+            <div class="chart-card">
+                <div id="trend_chart" style="height:350px"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Risk Score Bar Chart
+        Plotly.newPlot("risk_chart", [{
+            x: ["Bengaluru", "Mysuru", "Belagavi", "Tumkur", "Mangaluru", "Kalaburagi", "Davanagere", "Shivamogga"],
+            y: [94, 72, 68, 52, 48, 45, 32, 28],
+            type: "bar",
+            marker: {color: ["#ff4444","#f85149","#f85149","#d29922","#d29922","#d29922","#3fb950","#3fb950"]},
+            name: "Risk Score"
+        }], {
+            title: {text: "District Risk Scores", font: {color: "white"}},
+            paper_bgcolor: "#161b22",
+            plot_bgcolor: "#161b22",
+            font: {color: "white"},
+            xaxis: {gridcolor: "#30363d"},
+            yaxis: {gridcolor: "#30363d", range: [0, 100]}
+        }, {responsive: true});
+
+        // Predicted vs Actual
+        Plotly.newPlot("trend_chart", [
+            {
+                x: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                y: [320, 290, 310, 280, 350, 400, 380, 360, 330, 290, 310, 420],
+                type: "scatter", mode: "lines",
+                name: "Actual Crimes",
+                line: {color: "#f85149", width: 2}
+            },
+            {
+                x: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+                y: [300, 310, 295, 320, 370, 385, 395, 340, 350, 310, 330, 440],
+                type: "scatter", mode: "lines",
+                name: "AI Prediction",
+                line: {color: "#58a6ff", width: 2, dash: "dot"}
+            }
+        ], {
+            title: {text: "Actual vs AI Predicted Crimes", font: {color: "white"}},
+            paper_bgcolor: "#161b22",
+            plot_bgcolor: "#161b22",
+            font: {color: "white"},
+            xaxis: {gridcolor: "#30363d"},
+            yaxis: {gridcolor: "#30363d"}
+        }, {responsive: true});
+
+        // Risk Predictor Function
+        function predictRisk() {
+            var district = document.getElementById("district-select").value;
+            var time = document.getElementById("time-select").value;
+            var crime = document.getElementById("crime-select").value;
+
+            var riskScores = {
+                "Bengaluru Urban": 94, "Mysuru": 72, "Belagavi": 68,
+                "Tumkur": 52, "Mangaluru": 48, "Kalaburagi": 45,
+                "Davanagere": 32, "Ballari": 35, "Vijayapura": 38, "Shivamogga": 28
+            };
+
+            var timeMultiplier = {
+                "Morning (6AM-12PM)": 0.7,
+                "Afternoon (12PM-6PM)": 0.8,
+                "Evening (6PM-10PM)": 1.2,
+                "Night (10PM-6AM)": 1.4
+            };
+
+            var baseScore = riskScores[district] || 50;
+            var finalScore = Math.min(99, Math.round(baseScore * timeMultiplier[time]));
+
+            var level, color, bg;
+            if (finalScore >= 80) { level = "CRITICAL"; color = "#ff4444"; bg = "#2d1010"; }
+            else if (finalScore >= 60) { level = "HIGH"; color = "#f85149"; bg = "#3d1f1f"; }
+            else if (finalScore >= 40) { level = "MEDIUM"; color = "#d29922"; bg = "#3d2f10"; }
+            else { level = "LOW"; color = "#3fb950"; bg = "#1f3d2d"; }
+
+            var result = document.getElementById("prediction-result");
+            result.style.display = "block";
+            result.style.background = bg;
+            result.style.border = "1px solid " + color;
+            result.innerHTML =
+                "<b style='color:" + color + ";font-size:16px'>⚠️ Risk Level: " + level + " (" + finalScore + "/100)</b><br><br>" +
+                "<span style='color:#8b949e'>District: <b style='color:white'>" + district + "</b> &nbsp;|&nbsp; " +
+                "Time: <b style='color:white'>" + time + "</b> &nbsp;|&nbsp; " +
+                "Crime Type: <b style='color:white'>" + crime + "</b></span><br><br>" +
+                "<span style='color:#8b949e'>🤖 AI Recommendation: " + getRecommendation(level, district) + "</span>";
+        }
+
+        function getRecommendation(level, district) {
+            if (level === "CRITICAL") return "Deploy additional patrol units immediately to " + district + ". Activate surveillance systems.";
+            if (level === "HIGH") return "Increase patrol frequency in " + district + ". Alert nearest police stations.";
+            if (level === "MEDIUM") return "Monitor situation in " + district + ". Standard patrol schedule recommended.";
+            return "Low risk detected. Maintain routine operations in " + district + ".";
+        }
+    </script>
+</body>
+</html>
