@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import json
 import sys
 import os
@@ -11,13 +11,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    # Line chart - manual JSON build
     df_trends = get_crime_trends()
     months = df_trends["Month"].tolist()
     
     chart_trends = json.dumps({
         "data": [
-            {"x": months, "y": df_trends["Theft"].tolist(), 
+            {"x": months, "y": df_trends["Theft"].tolist(),
              "type": "scatter", "mode": "lines", "name": "Theft",
              "line": {"color": "#f85149", "width": 2}},
             {"x": months, "y": df_trends["Assault"].tolist(),
@@ -40,7 +39,6 @@ def home():
         }
     })
 
-    # Bar chart - manual JSON build
     df_district = get_district_crimes()
     chart_district = json.dumps({
         "data": [{
@@ -61,7 +59,6 @@ def home():
         }
     })
 
-    # Pie chart - manual JSON build
     df_types = get_crime_types()
     chart_types = json.dumps({
         "data": [{
@@ -88,12 +85,26 @@ def home():
 def crime_map():
     generate_crime_map()
     return render_template("map.html")
+
 @app.route("/network")
 def network():
     return render_template("network.html")
+
 @app.route("/risk")
 def risk():
     return render_template("risk.html")
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    from crime_model import predict_risk
+    data = request.json
+    result = predict_risk(
+        data["district"],
+        int(data["month"]),
+        data["time"],
+        data["crime_type"]
+    )
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True)
