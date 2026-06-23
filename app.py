@@ -88,6 +88,9 @@ def home():
 def crime_map():
     generate_crime_map()
     return render_template("map.html")
+@app.route("/network")
+def network():
+    return render_template("network.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

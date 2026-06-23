@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criminal Network Analysis</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0d1117; color: white; }
+        .navbar {
+            background: #161b22;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #f85149;
+        }
+        .navbar h1 { font-size: 20px; color: #f85149; }
+        div.nav-links { margin-left: auto; display: flex; gap: 15px; }
+        div.nav-links a { color: #8b949e; text-decoration: none; }
+        div.nav-links a:hover { color: #f85149; }
+        .content { padding: 30px; }
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #f85149;
+            border-left: 4px solid #f85149;
+            padding-left: 10px;
+        }
+        .chart-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .info-card h3 { color: #f85149; margin-bottom: 10px; }
+        .info-card p { color: #8b949e; font-size: 13px; line-height: 1.6; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 2px;
+        }
+        .badge-red { background: #3d1f1f; color: #f85149; }
+        .badge-blue { background: #1f2d3d; color: #58a6ff; }
+        .badge-green { background: #1f3d2d; color: #3fb950; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🚔 KSP Crime Analytics</h1>
+        <span>Karnataka State Police — SCRB Intelligence Dashboard</span>
+        <div class="nav-links">
+            <a href="/">📊 Dashboard</a>
+            <a href="/map">🗺️ Crime Map</a>
+            <a href="/network" style="color:#f85149">🕸️ Network</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <p class="section-title">🕸️ Criminal Network & Link Analysis</p>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>👤 Suspects Tracked</h3>
+                <p>12 active suspects identified across Karnataka with known associations</p>
+                <br>
+                <span class="badge badge-red">High Risk: 3</span>
+                <span class="badge badge-blue">Medium: 5</span>
+                <span class="badge badge-green">Low: 4</span>
+            </div>
+            <div class="info-card">
+                <h3>🔗 Connections Found</h3>
+                <p>15 criminal links discovered between suspects across multiple districts</p>
+                <br>
+                <span class="badge badge-red">Cross-district: 6</span>
+                <span class="badge badge-blue">Local: 9</span>
+            </div>
+            <div class="info-card">
+                <h3>📍 Key Locations</h3>
+                <p>6 recurring crime locations linked to multiple suspects</p>
+                <br>
+                <span class="badge badge-red">Bengaluru</span>
+                <span class="badge badge-blue">Mysuru</span>
+                <span class="badge badge-green">Belagavi</span>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div id="network_chart" style="height: 600px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Node positions (x, y coordinates)
+        var nodes = {
+            "Rajan K":     {x: 0.5,  y: 0.9,  risk: "high",   crimes: 8,  district: "Bengaluru"},
+            "Suresh M":    {x: 0.2,  y: 0.7,  risk: "high",   crimes: 6,  district: "Bengaluru"},
+            "Vikram D":    {x: 0.8,  y: 0.7,  risk: "high",   crimes: 7,  district: "Mysuru"},
+            "Arun P":      {x: 0.1,  y: 0.5,  risk: "medium", crimes: 4,  district: "Bengaluru"},
+            "Mohan S":     {x: 0.35, y: 0.6,  risk: "medium", crimes: 3,  district: "Tumkur"},
+            "Krishna R":   {x: 0.65, y: 0.6,  risk: "medium", crimes: 5,  district: "Mysuru"},
+            "Ganesh T":    {x: 0.9,  y: 0.5,  risk: "medium", crimes: 3,  district: "Belagavi"},
+            "Pavan B":     {x: 0.15, y: 0.35, risk: "medium", crimes: 2,  district: "Bengaluru"},
+            "Lokesh N":    {x: 0.5,  y: 0.4,  risk: "low",    crimes: 2,  district: "Davanagere"},
+            "Harish V":    {x: 0.75, y: 0.35, risk: "low",    crimes: 1,  district: "Belagavi"},
+            "Praveen C":   {x: 0.3,  y: 0.2,  risk: "low",    crimes: 1,  district: "Tumkur"},
+            "Santosh G":   {x: 0.65, y: 0.2,  risk: "low",    crimes: 2,  district: "Kalaburagi"}
+        };
+
+        var edges = [
+            ["Rajan K", "Suresh M"], ["Rajan K", "Vikram D"],
+            ["Rajan K", "Mohan S"],  ["Suresh M", "Arun P"],
+            ["Suresh M", "Mohan S"], ["Vikram D", "Krishna R"],
+            ["Vikram D", "Ganesh T"],["Krishna R", "Ganesh T"],
+            ["Arun P", "Pavan B"],   ["Mohan S", "Lokesh N"],
+            ["Krishna R", "Lokesh N"],["Lokesh N", "Praveen C"],
+            ["Lokesh N", "Santosh G"],["Ganesh T", "Harish V"],
+            ["Pavan B", "Praveen C"]
+        ];
+
+        var colorMap = {"high": "#f85149", "medium": "#d29922", "low": "#3fb950"};
+        var sizeMap  = {"high": 25, "medium": 18, "low": 14};
+
+        // Build edge lines
+        var edgeX = [], edgeY = [];
+        edges.forEach(function(e) {
+            var a = nodes[e[0]], b = nodes[e[1]];
+            edgeX.push(a.x, b.x, null);
+            edgeY.push(a.y, b.y, null);
+        });
+
+        var edgeTrace = {
+            x: edgeX, y: edgeY,
+            mode: "lines",
+            line: {width: 1.5, color: "#30363d"},
+            hoverinfo: "none",
+            type: "scatter"
+        };
+
+        // Build node points
+        var nodeX = [], nodeY = [], nodeColors = [];
+        var nodeSizes = [], nodeText = [], nodeHover = [];
+
+        Object.keys(nodes).forEach(function(name) {
+            var n = nodes[name];
+            nodeX.push(n.x);
+            nodeY.push(n.y);
+            nodeColors.push(colorMap[n.risk]);
+            nodeSizes.push(sizeMap[n.risk]);
+            nodeText.push(name);
+            nodeHover.push(
+                "<b>" + name + "</b><br>" +
+                "District: " + n.district + "<br>" +
+                "Crimes: " + n.crimes + "<br>" +
+                "Risk: " + n.risk.toUpperCase()
+            );
+        });
+
+        var nodeTrace = {
+            x: nodeX, y: nodeY,
+            mode: "markers+text",
+            marker: {
+                size: nodeSizes,
+                color: nodeColors,
+                line: {width: 2, color: "#0d1117"}
+            },
+            text: nodeText,
+            textposition: "top center",
+            textfont: {color: "white", size: 11},
+            hovertext: nodeHover,
+            hoverinfo: "text",
+            type: "scatter"
+        };
+
+        var layout = {
+            title: {text: "Criminal Association Network — Karnataka", font: {color: "white"}},
+            paper_bgcolor: "#161b22",
+            plot_bgcolor: "#161b22",
+            xaxis: {showgrid: false, zeroline: false, showticklabels: false},
+            yaxis: {showgrid: false, zeroline: false, showticklabels: false},
+            font: {color: "white"},
+            showlegend: false,
+            annotations: [
+                {x: 0.01, y: 0.01, xref: "paper", yref: "paper",
+                 text: "🔴 High Risk  🟡 Medium Risk  🟢 Low Risk",
+                 showarrow: false, font: {color: "white", size: 12},
+                 bgcolor: "#0d1117", borderpad: 6}
+            ]
+        };
+
+        Plotly.newPlot("network_chart", [edgeTrace, nodeTrace], layout, {responsive: true});
+    </script>
+</body>
+</html>
