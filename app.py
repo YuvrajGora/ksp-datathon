@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify
 import json
 import sys
 import os
@@ -89,7 +89,7 @@ def home():
 def crime_map():
     try:
         generate_crime_map()
-        return send_file("/tmp/map.html") # Safely streams your exact map layout
+        return render_template("map.html")
     except Exception as e:
         return f"Map error: {str(e)}", 500
 
@@ -100,6 +100,10 @@ def network():
 @app.route("/risk")
 def risk():
     return render_template("risk.html")
+
+@app.route("/filter")
+def filter_page():
+    return render_template("filter.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -113,6 +117,6 @@ def predict():
     )
     return jsonify(result)
 
-if __name__ == '__main__':
-    listen_port = int(os.environ.get('X_ZOHO_CATALYST_LISTEN_PORT', 9000))
-    app.run(host='0.0.0.0', port=listen_port)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
