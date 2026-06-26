@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import json
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'data'))
+# Fix path FIRST before any imports
+data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+sys.path.insert(0, data_path)
+
+# Now import data modules
 from crime_data import get_crime_trends, get_district_crimes, get_crime_types
 from map_generator import generate_crime_map
 
@@ -83,8 +87,11 @@ def home():
 
 @app.route("/map")
 def crime_map():
-    generate_crime_map()
-    return render_template("map.html")
+    try:
+        generate_crime_map()
+        return send_file("/tmp/map.html") # Safely streams your exact map layout
+    except Exception as e:
+        return f"Map error: {str(e)}", 500
 
 @app.route("/network")
 def network():
@@ -106,5 +113,6 @@ def predict():
     )
     return jsonify(result)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    listen_port = int(os.environ.get('X_ZOHO_CATALYST_LISTEN_PORT', 9000))
+    app.run(host='0.0.0.0', port=listen_port)

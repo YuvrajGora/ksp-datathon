@@ -1,0 +1,12 @@
+{
+    "command": "python3 app.py",
+    "build_path": ".",
+    "stack": "python_3_13",
+    "memory": 512,
+    "env_variables": {
+        "PORT": "9000"
+    },
+    "scripts": {
+        "build": "pip3 install --no-cache-dir -r requirements.txt"
+    }
+}

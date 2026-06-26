@@ -67,7 +67,7 @@ def create_training_data():
     
     return pd.DataFrame(records)
 
-# Train the model
+# Train the model ONCE globally
 def train_model():
     df = create_training_data()
     
@@ -89,22 +89,23 @@ def train_model():
     
     return model, le_district, le_time, le_crime, le_risk
 
-# Predict risk
+# Global instantiation so it loads into memory immediately when Zoho boots the app
+GLOBAL_MODEL, LE_DISTRICT, LE_TIME, LE_CRIME, LE_RISK = train_model()
+
+# Predict risk without retraining
 def predict_risk(district, month, time, crime_type):
-    model, le_district, le_time, le_crime, le_risk = train_model()
-    
     try:
-        d_enc = le_district.transform([district])[0]
-        t_enc = le_time.transform([time])[0]
-        c_enc = le_crime.transform([crime_type])[0]
+        d_enc = LE_DISTRICT.transform([district])[0]
+        t_enc = LE_TIME.transform([time])[0]
+        c_enc = LE_CRIME.transform([crime_type])[0]
     except:
         return {"level": "Unknown", "score": 0, "confidence": 0}
     
     features = [[d_enc, month, t_enc, c_enc]]
-    prediction = model.predict(features)[0]
-    probability = model.predict_proba(features)[0]
+    prediction = GLOBAL_MODEL.predict(features)[0]
+    probability = GLOBAL_MODEL.predict_proba(features)[0]
     
-    risk_level = le_risk.inverse_transform([prediction])[0]
+    risk_level = LE_RISK.inverse_transform([prediction])[0]
     confidence = round(max(probability) * 100, 1)
     
     # Score based on level

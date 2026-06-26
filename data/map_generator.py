@@ -65,6 +65,7 @@ def generate_crime_map():
     </div>
     """
     m.get_root().html.add_child(folium.Element(legend_html))
+    
     # Add navbar
     navbar_html = """
     <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#161b22;
@@ -83,8 +84,7 @@ def generate_crime_map():
     """
     m.get_root().html.add_child(folium.Element(navbar_html))
 
-    # Save map
-    map_path = os.path.join(os.path.dirname(__file__), 
-                            "..", "templates", "map.html")
+    # Save to dynamic writeable space
+    map_path = "/tmp/map.html"
     m.save(map_path)
     return map_path

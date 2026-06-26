@@ -1,0 +1,15 @@
+{
+  "appSail": {
+    "name": "ksp-dashboard",
+    "source": "."
+  },
+  "targets": [
+    "ksp-dashboard"
+  ],
+  "appsail": [
+    {
+      "source": ".",
+      "name": "ksp-dashboard"
+    }
+  ]
+}
