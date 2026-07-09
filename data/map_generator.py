@@ -79,6 +79,7 @@ def generate_crime_map():
             <a href="/network" style="color:#8b949e;text-decoration:none;">🕸️ Network</a>
             <a href="/risk" style="color:#8b949e;text-decoration:none;">🤖 AI Risk</a>
             <a href="/offenders" style="color: #8b949e; text-decoration: none;">👤 Offenders</a>
+            <a href="/socio" style="color: #8b949e; text-decoration: none;">📈 Socio</a>
         </div>
     </div>
     <div style="height:60px;"></div>

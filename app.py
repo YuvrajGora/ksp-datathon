@@ -121,6 +121,10 @@ def predict():
 def offenders():
     return render_template("offenders.html")
 
+@app.route("/socio")
+def socio():
+    return render_template("socio.html")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
