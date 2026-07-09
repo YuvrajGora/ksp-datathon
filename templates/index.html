@@ -59,6 +59,11 @@
             border-left: 4px solid #f85149;
             padding-left: 10px;
         }
+        @keyframes pulse {
+            0% { opacity: 1; box-shadow: 0 0 5px currentColor; }
+            50% { opacity: 0.5; box-shadow: 0 0 20px currentColor; }
+            100% { opacity: 1; box-shadow: 0 0 5px currentColor; }
+        }
     </style>
 </head>
 <body>
@@ -72,6 +77,7 @@
             <a href="/network" style="color: #8b949e; text-decoration: none;">🕸️ Network</a>
             <a href="/risk" style="color: #8b949e; text-decoration: none;">🤖 AI Risk</a>
             <a href="/filter" style="color: #8b949e; text-decoration: none;">🔍 Search</a>
+            <a href="/offenders" style="color: #8b949e; text-decoration: none;">👤 Offenders</a>
         </div>
     </div>
 
@@ -93,6 +99,59 @@
             <p>Case Resolution Rate</p>
         </div>
     </div>
+
+    <!-- Anomaly Detection Section -->
+<div style="padding: 0 30px 30px 30px;">
+    <p class="section-title">🚨 Live Anomaly Detection & Alerts</p>
+    <div id="anomaly-container" style="display:flex; flex-direction:column; gap:12px;">
+        
+        <div style="background:#161b22; border:1px solid #ff4444; border-left:4px solid #ff4444; border-radius:10px; padding:18px; display:flex; align-items:center; gap:15px;">
+            <div style="width:14px; height:14px; border-radius:50%; background:#ff4444; box-shadow:0 0 10px #ff4444; animation:pulse 1.5s infinite;"></div>
+            <div style="flex:1;">
+                <b style="color:#ff4444;">🚨 CRITICAL ANOMALY — Bengaluru Urban</b>
+                <p style="color:#8b949e; font-size:13px; margin-top:4px;">Theft cases spiked <b style="color:white;">+34%</b> above monthly average. Immediate patrol deployment recommended.</p>
+            </div>
+            <span style="background:#3d1010; color:#ff4444; padding:4px 12px; border-radius:20px; font-size:12px; white-space:nowrap;">CRITICAL</span>
+        </div>
+
+        <div style="background:#161b22; border:1px solid #f85149; border-left:4px solid #f85149; border-radius:10px; padding:18px; display:flex; align-items:center; gap:15px;">
+            <div style="width:14px; height:14px; border-radius:50%; background:#f85149; box-shadow:0 0 10px #f85149; animation:pulse 2s infinite;"></div>
+            <div style="flex:1;">
+                <b style="color:#f85149;">⚠️ HIGH ALERT — Mysuru District</b>
+                <p style="color:#8b949e; font-size:13px; margin-top:4px;">Assault cases rising for <b style="color:white;">3 consecutive months</b>. Pattern suggests organized activity.</p>
+            </div>
+            <span style="background:#3d1f1f; color:#f85149; padding:4px 12px; border-radius:20px; font-size:12px; white-space:nowrap;">HIGH</span>
+        </div>
+
+        <div style="background:#161b22; border:1px solid #d29922; border-left:4px solid #d29922; border-radius:10px; padding:18px; display:flex; align-items:center; gap:15px;">
+            <div style="width:14px; height:14px; border-radius:50%; background:#d29922; box-shadow:0 0 10px #d29922; animation:pulse 2.5s infinite;"></div>
+            <div style="flex:1;">
+                <b style="color:#d29922;">📊 TREND ALERT — Belagavi District</b>
+                <p style="color:#8b949e; font-size:13px; margin-top:4px;">Robbery incidents <b style="color:white;">+18%</b> above seasonal average. Monitor closely over next 7 days.</p>
+            </div>
+            <span style="background:#3d2f10; color:#d29922; padding:4px 12px; border-radius:20px; font-size:12px; white-space:nowrap;">MEDIUM</span>
+        </div>
+
+        <div style="background:#161b22; border:1px solid #d29922; border-left:4px solid #d29922; border-radius:10px; padding:18px; display:flex; align-items:center; gap:15px;">
+            <div style="width:14px; height:14px; border-radius:50%; background:#d29922; box-shadow:0 0 8px #d29922; animation:pulse 2.5s infinite;"></div>
+            <div style="flex:1;">
+                <b style="color:#d29922;">🔍 ANOMALY DETECTED — Mangaluru</b>
+                <p style="color:#8b949e; font-size:13px; margin-top:4px;">Cybercrime reports increased <b style="color:white;">+27%</b> this quarter. Digital fraud pattern emerging.</p>
+            </div>
+            <span style="background:#3d2f10; color:#d29922; padding:4px 12px; border-radius:20px; font-size:12px; white-space:nowrap;">MEDIUM</span>
+        </div>
+
+        <div style="background:#161b22; border:1px solid #3fb950; border-left:4px solid #3fb950; border-radius:10px; padding:18px; display:flex; align-items:center; gap:15px;">
+            <div style="width:14px; height:14px; border-radius:50%; background:#3fb950; box-shadow:0 0 8px #3fb950;"></div>
+            <div style="flex:1;">
+                <b style="color:#3fb950;">✅ NORMAL — Davanagere, Shivamogga, Ballari</b>
+                <p style="color:#8b949e; font-size:13px; margin-top:4px;">All crime types within <b style="color:white;">normal statistical range</b>. No immediate action required.</p>
+            </div>
+            <span style="background:#1f3d2d; color:#3fb950; padding:4px 12px; border-radius:20px; font-size:12px; white-space:nowrap;">NORMAL</span>
+        </div>
+
+    </div>
+</div>
 
     <p class="section-title">📈 Monthly Crime Trends</p>
     <div class="chart-full">
