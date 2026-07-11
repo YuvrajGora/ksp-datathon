@@ -12,7 +12,7 @@
 ---
 
 ## 🌐 Live Demo
-**[https://ksp-datathon-gslk.onrender.com](https://ksp-datathon-gslk.onrender.com)**
+**[https://ksp1-50043372326.development.catalystappsail.in](https://ksp1-50043372326.development.catalystappsail.in)**
 
 ---
 
@@ -30,11 +30,13 @@ A modern AI-powered crime analytics platform that transforms raw crime data into
 
 | Feature | Description |
 |---------|-------------|
-| 📊 **Interactive Dashboard** | Real-time charts showing crime trends, district comparisons and type distribution |
+| 📊 **Interactive Dashboard** | Real-time charts showing crime trends, district comparisons and type distribution, plus automated anomaly alerts |
 | 🗺️ **Crime Hotspot Map** | Interactive Karnataka map with heatmap overlay and risk-colored district markers |
 | 🕸️ **Criminal Network Analysis** | Node-based visualization of criminal associations and repeat offender connections |
 | 🤖 **AI Risk Predictor** | Random Forest ML model predicting crime risk by district, time and crime type |
 | 🔍 **Search & Filter** | Dynamic filtering by district, crime type, time period and risk level |
+| 👤 **Repeat Offender Tracking** | Behavioral profiling and linked incident tracking for repeat offenders |
+| 📈 **Socio-Economic Correlation** | Crime data correlated against socio-economic indicators |
 
 ---
 
@@ -52,7 +54,7 @@ A modern AI-powered crime analytics platform that transforms raw crime data into
 - Folium (Map Visualization)
 
 **Deployment**
-- Render (Live Hosting)
+- Zoho Catalyst AppSail (Live Hosting — Catalyst-Managed Python 3.13 Runtime)
 - GitHub (Version Control)
 
 ---
@@ -69,7 +71,13 @@ A modern AI-powered crime analytics platform that transforms raw crime data into
 > Node-based visualization of criminal associations
 
 ### AI Risk Predictor
-> ML-powered real-time risk scoring with 97% confidence
+> ML-powered real-time risk scoring
+
+### Repeat Offender Tracking
+> Behavioral profiling for tracked offenders across districts
+
+### Socio-Economic Correlation
+> Crime patterns correlated against socio-economic indicators
 
 ---
 
@@ -93,43 +101,38 @@ python app.py
 ```
 
 ### Access
-Open your browser and go to `http://localhost:5000`
+Open your browser and go to `http://localhost:9000`
 
 ---
 
 ## 📁 Project Structure
+```
 ksp-datathon/
-
-├── app.py              # Flask application & routes
-
-├── requirements.txt    # Python dependencies
-
+├── app.py                  # Flask application & routes
+├── requirements.txt         # Python dependencies
+├── runtime.txt              # Python version pin
+├── app-config.json          # Catalyst AppSail runtime configuration
+├── catalyst.json            # Catalyst project/resource linkage
+├── vendor/                  # Bundled Linux-compatible dependencies (Catalyst deployment)
 ├── data/
-
-│   ├── crime_data.py   # Karnataka crime dataset
-
-│   ├── crime_model.py  # ML Random Forest model
-
-│   └── map_generator.py # Folium map generator
-
+│   ├── crime_data.py         # Karnataka crime dataset
+│   ├── crime_model.py        # ML Random Forest model
+│   └── map_generator.py      # Folium map generator
 └── templates/
-
-├── index.html      # Main dashboard
-
-├── map.html        # Crime hotspot map
-
-├── network.html    # Criminal network viz
-
-├── risk.html       # AI risk scoring
-
-└── filter.html     # Search & filter
+    ├── index.html            # Main dashboard
+    ├── map.html              # Crime hotspot map
+    ├── network.html          # Criminal network viz
+    ├── risk.html             # AI risk scoring
+    ├── filter.html           # Search & filter
+    ├── offenders.html        # Repeat offender tracking
+    └── socio.html            # Socio-economic correlation
+```
 
 ---
 
 ## 🤖 ML Model Details
 - **Algorithm:** Random Forest Classifier
 - **Features:** District, Month, Time of Day, Crime Type
-- **Training Data:** 2000 synthetic Karnataka crime records
 - **Output:** Risk Level (Critical/High/Medium/Low) + Confidence Score
 
 ---
@@ -137,7 +140,7 @@ ksp-datathon/
 ## 📊 Key Insights
 - **Bengaluru Urban** accounts for ~25% of all Karnataka crimes
 - **Theft** is the most common crime across all districts
-- **Night time (10PM-6AM)** shows 40% higher crime risk
+- **Night time (10PM-6AM)** shows higher crime risk
 - **December** consistently shows highest crime rates (festival season)
 
 ---
